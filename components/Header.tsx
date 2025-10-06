@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { User } from '../types';
+import { User, UserRole } from '../types';
 
 interface HeaderProps {
     user: User | null;
@@ -8,9 +8,11 @@ interface HeaderProps {
     isImpersonating?: boolean;
     onExitImpersonation?: () => void;
     onLoginClick?: () => void;
+    activeRole?: UserRole | null;
+    onSwitchRole?: (role: 'merchant' | '3pl') => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ user, onLogout, isImpersonating, onExitImpersonation, onLoginClick }) => {
+export const Header: React.FC<HeaderProps> = ({ user, onLogout, isImpersonating, onExitImpersonation, onLoginClick, activeRole, onSwitchRole }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
 
@@ -63,12 +65,35 @@ export const Header: React.FC<HeaderProps> = ({ user, onLogout, isImpersonating,
                             </svg>
                         </button>
                         {isMenuOpen && (
-                            <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 z-20" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button">
+                            <div className="absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 z-20" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button">
                                 <div className="px-4 py-2 border-b">
                                     <p className="text-sm text-gray-700">Signed in as</p>
                                     <p className="text-sm font-medium text-brand-primary truncate">{user.email}</p>
                                     <p className="text-xs text-gray-500 capitalize">{user.role} Account</p>
                                 </div>
+                                
+                                {user.role !== 'superuser' && onSwitchRole && activeRole && (
+                                    <div className="px-4 py-3 border-b">
+                                        <label className="block text-xs font-semibold text-gray-500 mb-2 uppercase">View Dashboard As</label>
+                                        <div className="flex rounded-lg border border-gray-200 p-1 bg-gray-50">
+                                            <button
+                                                type="button"
+                                                onClick={() => { onSwitchRole('merchant'); setIsMenuOpen(false); }}
+                                                className={`w-1/2 py-1 text-sm font-semibold rounded-md transition-colors duration-150 ${activeRole === 'merchant' ? 'bg-brand-primary text-white shadow-sm' : 'text-gray-600 hover:bg-brand-light'}`}
+                                            >
+                                                Merchant
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => { onSwitchRole('3pl'); setIsMenuOpen(false); }}
+                                                className={`w-1/2 py-1 text-sm font-semibold rounded-md transition-colors duration-150 ${activeRole === '3pl' ? 'bg-brand-primary text-white shadow-sm' : 'text-gray-600 hover:bg-brand-light'}`}
+                                            >
+                                                3PL Provider
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+
                                 <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Settings</a>
                                 <a href="#" onClick={handleLogoutClick} className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100" role="menuitem">Sign Out</a>
                             </div>

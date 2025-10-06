@@ -64,11 +64,28 @@ export interface FormDefinition {
   [key: string]: any;
 }
 
+export interface Message {
+  id: string;
+  senderId: string;
+  text: string;
+  timestamp: Date;
+  isUnread: boolean;
+}
+
+export interface Document {
+  id: string;
+  fileName: string;
+  url: string;
+  uploadedAt: Date;
+}
+
 export interface QuoteRequest {
     id: string;
     status: 'New Request' | 'Viewed' | 'Quoted';
     formData: Record<string, any>;
     submittedAt: Date;
+    communications?: Message[];
+    documents?: Document[];
 }
 
 export type UserRole = 'merchant' | '3pl' | 'superuser';
@@ -81,4 +98,23 @@ export interface User {
   authMethod: 'google' | 'email';
   role: UserRole;
   status: UserStatus;
+}
+
+export interface Quotation {
+  id: string;
+  quoteRequestId: string;
+  submittedBy: string; // User ID of the 3PL
+  submittedAt: Date;
+  pricing: {
+    storageFee: number;
+    inboundFee: number;
+    pickPackFirst: number;
+    pickPackAdditional: number;
+    packagingFee?: number;
+    accountFee?: number;
+  };
+  quoteExpiry: string; // Date string
+  notes?: string;
+  shareableUrl?: string;
+  status: 'Pending' | 'Accepted' | 'Declined';
 }

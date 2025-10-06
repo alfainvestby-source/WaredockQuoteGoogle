@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 
 interface FormFieldProps {
@@ -43,9 +44,13 @@ const FormField: React.FC<FormFieldProps> = ({ label, name, type = 'text', value
     </div>
 );
 
+interface PricingFormProps {
+    onPreview: (pricingData: any) => void;
+    initialData?: any | null;
+}
 
-export const PricingForm: React.FC = () => {
-    const [pricingData, setPricingData] = useState({
+export const PricingForm: React.FC<PricingFormProps> = ({ onPreview, initialData }) => {
+    const [pricingData, setPricingData] = useState(initialData || {
         storageFee: '',
         inboundFee: '',
         pickPackFirst: '',
@@ -63,7 +68,7 @@ export const PricingForm: React.FC = () => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        alert('Quote Sent!\\n' + JSON.stringify(pricingData, null, 2));
+        onPreview(pricingData);
     };
 
     return (
@@ -101,7 +106,7 @@ export const PricingForm: React.FC = () => {
                     type="submit"
                     className="bg-brand-primary text-white font-bold px-8 py-3 rounded-lg hover:bg-brand-secondary transition-colors shadow-lg"
                 >
-                    Send Quote to Client
+                    Preview Quote
                 </button>
             </div>
         </form>

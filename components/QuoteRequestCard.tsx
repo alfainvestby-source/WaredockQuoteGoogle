@@ -1,9 +1,12 @@
+
 import React from 'react';
 import { QuoteRequest } from '../types';
 
 interface QuoteRequestCardProps {
   quote: QuoteRequest;
   onViewDetails: (quote: QuoteRequest) => void;
+  quotationCount?: number;
+  unreadCount?: number;
 }
 
 const getStatusStyles = (status: string) => {
@@ -35,12 +38,17 @@ const getStatusStyles = (status: string) => {
     }
 }
 
-export const QuoteRequestCard: React.FC<QuoteRequestCardProps> = ({ quote, onViewDetails }) => {
+export const QuoteRequestCard: React.FC<QuoteRequestCardProps> = ({ quote, onViewDetails, quotationCount = 0, unreadCount = 0 }) => {
     const { formData, submittedAt, status, id } = quote;
     const statusStyle = getStatusStyles(status);
 
     return (
-        <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+        <div className="relative bg-white rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+            {unreadCount > 0 && (
+                <div className="absolute top-0 right-0 -mt-2 -mr-2 flex items-center justify-center w-6 h-6 bg-red-500 text-white text-xs font-bold rounded-full">
+                    {unreadCount}
+                </div>
+            )}
             <div>
                 <div className="flex justify-between items-start mb-4">
                     <div>
@@ -57,6 +65,11 @@ export const QuoteRequestCard: React.FC<QuoteRequestCardProps> = ({ quote, onVie
                     <p><span className="font-semibold">📦 Category:</span> {formData.product_category_OTHER || formData.product_category}</p>
                     <p><span className="font-semibold">🚚 Monthly Orders:</span> {formData.B2C_orders}</p>
                     <p><span className="font-semibold">#️⃣ SKUs:</span> {formData.SKUcount}</p>
+                     {quotationCount > 0 && (
+                        <p className="font-semibold text-brand-secondary">
+                            {quotationCount} Quotation{quotationCount > 1 ? 's' : ''} Received
+                        </p>
+                    )}
                 </div>
             </div>
 

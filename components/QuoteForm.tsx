@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { FormField, Step } from '../types';
 
@@ -11,10 +12,8 @@ interface FormFieldProps {
 const FormFieldComponent: React.FC<FormFieldProps> = ({ field, value, error, onChange }) => {
   const { element, attributes, settings, fields } = field;
 
-  // Base classes for form elements
   const baseClasses = "w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent transition-shadow shadow-sm";
   
-  // Conditional classes for error state
   const errorClasses = "border-red-500 text-red-900 placeholder-red-300 focus:ring-red-500";
   const normalClasses = "border-gray-300 focus:ring-brand-secondary";
   
@@ -27,7 +26,6 @@ const FormFieldComponent: React.FC<FormFieldProps> = ({ field, value, error, onC
         const subInputClasses = `${baseClasses} ${error ? errorClasses : normalClasses}`;
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* FIX: Explicitly type subField as FormField to resolve property access errors. */}
             {Object.values(fields || {}).map((subField: FormField) => (
                <div key={subField.attributes.name}>
                  <label className="block text-gray-700 font-semibold mb-1" htmlFor={subField.attributes.name}>{subField.settings.label}</label>
@@ -160,9 +158,11 @@ interface QuoteFormProps {
   onDataChange: (name: string, value: any) => void;
   onNextStep: () => void;
   onPrevStep: () => void;
+  onCancel?: () => void;
   isLastStep: boolean;
   currentStep: number;
   totalSteps: number;
+  submitButtonText?: string;
 }
 
 export const QuoteForm: React.FC<QuoteFormProps> = ({
@@ -172,9 +172,11 @@ export const QuoteForm: React.FC<QuoteFormProps> = ({
   onDataChange,
   onNextStep,
   onPrevStep,
+  onCancel,
   isLastStep,
   currentStep,
-  totalSteps
+  totalSteps,
+  submitButtonText,
 }) => {
   const progressPercentage = ((currentStep + 1) / totalSteps) * 100;
 
@@ -215,25 +217,36 @@ export const QuoteForm: React.FC<QuoteFormProps> = ({
         );
       })}
 
-      <div className="mt-10 flex flex-col-reverse sm:flex-row sm:justify-between items-center gap-4">
+      <div className="mt-10 flex justify-between items-center">
         <div>
-            {currentStep > 0 && (
-              <button
-                type="button"
-                onClick={onPrevStep}
-                className="w-full sm:w-auto px-6 py-2 text-brand-primary font-semibold rounded-lg hover:bg-brand-light transition-colors"
-              >
-                Back
-              </button>
-            )}
+          {currentStep > 0 && (
+            <button
+              type="button"
+              onClick={onPrevStep}
+              className="px-6 py-2 text-brand-primary font-semibold rounded-lg hover:bg-brand-light transition-colors"
+            >
+              Back
+            </button>
+          )}
         </div>
-        <button
-          type="button"
-          onClick={onNextStep}
-          className="w-full sm:w-auto bg-brand-primary text-white font-bold px-8 py-3 rounded-lg hover:bg-brand-secondary transition-colors shadow-lg"
-        >
-          {isLastStep ? 'Request Pricing' : 'Next'}
-        </button>
+        <div className="flex items-center gap-4">
+          {onCancel && (
+            <button
+              type="button"
+              onClick={onCancel}
+              className="px-6 py-2 text-gray-700 font-semibold rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              Cancel
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={onNextStep}
+            className="bg-brand-primary text-white font-bold px-8 py-3 rounded-lg hover:bg-brand-secondary transition-colors shadow-lg"
+          >
+            {isLastStep ? (submitButtonText || 'Request Pricing') : 'Next'}
+          </button>
+        </div>
       </div>
     </div>
   );
